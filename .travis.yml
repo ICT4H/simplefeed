@@ -1,8 +1,0 @@
-language: java
-jdk:
-  - openjdk7
-env:
-  - DB=postgres
-before_install:
-  - sh atomfeed-server/src/main/resources/sql/setup.sh
-script: "mvn integration-test -P IT"
