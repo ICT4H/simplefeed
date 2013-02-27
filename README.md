@@ -60,7 +60,7 @@ Because Atom is based on polling, it has high latency compared to other approach
 Simplefeed
 ----------
 
-To keep things simple, we won't worry about editing or writing to feeds. We will describe a simple protocol suitable for broadcasting events to multiple consumers, and assume that the server providing the feed has some way of recognising and registering new events as Atom entries.
+We will describe a protocol suitable for broadcasting events to multiple consumers using Atom. To keep things simple, we won't worry about editing or writing to feeds. We will assume that the server providing the feed has some way of recognising and registering new events as Atom entries.
 
 "Atom" can also sometimes refer to [AtomPub](https://tools.ietf.org/html/rfc5023), a protocol for editing and publishing web resources built on top of the Atom XML format. If you need your feed to be editable over HTTP, AtomPub is a good place to start.
 
@@ -227,6 +227,6 @@ Another useful optimisation for the recent document are ETags and Last-Modified 
 References
 ----------
 
-A great reference for understanding Atom's use in RESTful event-driven systems is Chapter 7 of [REST in Practice](http://restinpractice.com/book/) by Jim Webber, Savas Parastatidis and Ian Robinson.
+A great reference for understanding Atom's use in RESTful event-driven systems is [REST in Practice](http://restinpractice.com/book/) by Jim Webber, Savas Parastatidis and Ian Robinson. We based our description of Simplefeed on Chapter 7.
 
 [Atomfeed](https://github.com/ICT4H/atomfeed) is a library for using Simplefeed from Java or Java Spring web applications. Currently a work-in-progress.
