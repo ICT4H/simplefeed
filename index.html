@@ -98,7 +98,7 @@
 
 <h2>Simplefeed</h2>
 
-<p>To keep things simple, we won't worry about editing or writing to feeds. We will describe a simple protocol suitable for broadcasting events to multiple consumers, and assume that the server providing the feed has some way of recognising and registering new events as Atom entries.</p>
+<p>We will describe a protocol suitable for broadcasting events to multiple consumers using Atom. To keep things simple, we won't worry about editing or writing to feeds. We will assume that the server providing the feed has some way of recognising and registering new events as Atom entries.</p>
 
 <p>"Atom" can also sometimes refer to <a href="https://tools.ietf.org/html/rfc5023">AtomPub</a>, a protocol for editing and publishing web resources built on top of the Atom XML format. If you need your feed to be editable over HTTP, AtomPub is a good place to start.</p>
 
@@ -125,7 +125,7 @@
 
 <p>Similar to a doubly-linked list, each document has <em>prev-archive</em> and <em>next-archive</em> links that can be followed to find the next document in the chain.</p>
 
-<p>There is one special document known as the recent document, which holds the most recent entries. This document does not have a <em>next-archive</em> link because it is at the head of the list.</p>
+<p>There are two special cases. Because it is at the head of the list, the recent document cannot have a <em>next-archive</em> link. Similarly, the first document does not have a <em>prev-archive</em> link.</p>
 
 <p>The recent document is the published entry point to the feed. Consumers of the event feed will always be able to retrieve <a href="http://example.com/recent">http://example.com/recent</a> to get the most recent entries.</p>
 
@@ -269,7 +269,7 @@
 
 <h2>References</h2>
 
-<p>A great reference for understanding Atom's use in RESTful event-driven systems is Chapter 7 of <a href="http://restinpractice.com/book/">REST in Practice</a> by Jim Webber, Savas Parastatidis and Ian Robinson.</p>
+<p>A great reference for understanding Atom's use in RESTful event-driven systems is <a href="http://restinpractice.com/book/">REST in Practice</a> by Jim Webber, Savas Parastatidis and Ian Robinson. We based our description of Simplefeed on Chapter 7.</p>
 
 <p><a href="https://github.com/ICT4H/atomfeed">Atomfeed</a> is a library for using Simplefeed from Java or Java Spring web applications. Currently a work-in-progress.</p>
       </section>
