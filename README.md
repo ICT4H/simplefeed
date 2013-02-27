@@ -1,12 +1,12 @@
-Atom
-====
+Simplefeed
+==========
 
 What is Atom?
 ------------
 
 [Atom](http://en.wikipedia.org/wiki/Atom_(standard\)) is an XML-based syndication format which represents time-ordered series of events. In Atom terminology, each event is an *entry* and the series of events is a *feed*.
 
-Both feeds and entries have metadata associated with them, for example a title and a unique identifier. They can also have links, for example a "self" link that point back to the selfsame entry or feed.
+Both feeds and entries have metadata associated with them, for example a title and a unique identifier. They can also have links with a *rel* attribute describing the relationship the link represents, for example a link with rel "self" that points back to the selfsame entry or feed.
 
     <?xml version="1.0">
         <feed xmlns="http://www.w3.org/2005/Atom">
@@ -51,28 +51,28 @@ Atom is a general-purpose format that can be extended to fit a particular domain
 Event-driven systems
 --------------------
 
-Atom can be used to implement event-driven systems by adding an entry to the feed every time something happens that subscribers might be interested in. Subscribers find out about these events by polling the feed. When new subscribers arrive, they can simply also start polling the feed without any change needed to the service.
+Atom can be used to implement event-driven systems by adding an entry to the feed every time something happens that consumers might be interested in. Consumers find out about these events by polling the feed. When new consumers arrive, they can simply also start polling the feed without any change needed to the feed provider.
 
 Depending on the nature of the event and the size of the resource that it applies to, the Atom entry could either include a snapshot of the new state of the resource, or simply link to the resource so that the client can issue a fresh GET.
 
 Because Atom is based on polling, it has high latency compared to other approaches, which might make it unsuitable for real time systems. However, using a RESTful polling approach decouples client and server, and provides scalability through the opportunity for heavy caching.
 
-A simple protocol
------------------
+Simplefeed
+----------
 
-"Atom" can also sometimes refer to [AtomPub](https://tools.ietf.org/html/rfc5023), a protocol for editing and publishing web resources built on top of the Atom XML format.
+To keep things simple, we won't worry about editing or writing to feeds. We will describe a simple protocol suitable for broadcasting events to multiple consumers, and assume that the server providing the feed has some way of recognising and registering new events as Atom entries.
 
-We are not concerned with editing or writing to feeds. We will describe a simplified form of AtomPub suitable for broadcasting events to multiple consumers, and assume the server hosting the service has some way of recognising and registering new events as Atom entries.
+"Atom" can also sometimes refer to [AtomPub](https://tools.ietf.org/html/rfc5023), a protocol for editing and publishing web resources built on top of the Atom XML format. If you need your feed to be editable over HTTP, AtomPub is a good place to start.
 
-As well as conforming to the restrictions of the Atom XML format, our protocol is based on the following rules:
-* Entries are ordered by the time they were added to the feed, from newest to oldest.
+As well as conforming to the Atom XML format, our Simplefeed protocol is based on the following rules:
+* Entries are ordered by the time they were added to the feed, from newest at the top of the feed to oldest at the bottom.
 * An entry, once published, never changes.
 * The series of entries is paginated over many Atom documents.
 * All documents except the oldest will have a link with rel "next-archive" pointing to the next document in the feed.
 * All documents except the newest will have a link with rel "prev-archive" pointing to the previous document in the feed. 
-* Only the most recent document may change, and that can only change by newer events being prepended to it.
-* When the server decides the most recent document is finished, it archives that document and creates a new document.
-* There is a published URL that always points to the most recent document and serves as an entry point to the feed.
+* Only the newest document, known as the *recent document*, may change, and that can only change by newer events being prepended to it.
+* When the feed provider decides the recent document is finished, it archives that document and creates a new document.
+* There is a published URL that always points to the *recent document* and serves as an entry point to the feed.
 
 Though it is good practice to use intuitive URLs, the protocol in no way depends on the structure of the URLs. Consumers should follow links, and not attempt to construct URLs themselves.
 
@@ -83,15 +83,15 @@ As Atom entries are intended to be available indefinitely, the feed of events ca
 
 The solution is to break up a single logical feed into many documents. As Atom is designed to follow RESTful conventions, Atom does this by means of links.
 
-The server breaks up the series of events into separate documents and gives each of them their own URL. The server might choose to make each document represent a period of time e.g. a day, or might divide the series of events evenly so that each document has e.g. 100 entries. 
+The feed provider breaks up the series of events into separate documents and gives each of them their own URL. The provider might choose to make each document represent a period of time e.g. a day, or might divide the series of events evenly so that each document has e.g. 100 entries. 
 
 Similar to a doubly-linked list, each document has *prev-archive* and *next-archive* links that can be followed to find the next document in the chain.
 
-There is one special document known as the recent document, which holds the most recent entries. This document does not have a *next* link because it is at the head of the list.
+There is one special document known as the recent document, which holds the most recent entries. This document does not have a *next-archive* link because it is at the head of the list.
 
 The recent document is the published entry point to the feed. Consumers of the event feed will always be able to retrieve http://example.com/recent to get the most recent entries.
 
-Documents older than the recent one are known as archived documents. Archived documents do not change after they have been created, but the recent document will continue to have entries prepended to it until the server archives it. This means that caching can be much more agressive for archived documents than the recent document.
+Documents older than the recent one are known as archived documents. Archived documents do not change after they have been created, but the recent document will continue to have entries prepended to it until the feed provider archives it. This means that caching can be much more agressive for archived documents than the recent document.
 
     <?xml version="1.0">
         <feed xmlns="http://www.w3.org/2005/Atom">
@@ -106,7 +106,7 @@ Documents older than the recent one are known as archived documents. Archived do
             <entry>..</entry>
         </feed>
 
-The recent document can also be accessed through its permanent URL, which is represented with a "via" link. Once the server has archived the current recent document, it will create a new one and leave the via link intact.
+The recent document can also be accessed through its permanent URL, which is represented with a "via" link. Once the feed provider has archived the current recent document, it will create a new one and leave the via link intact.
 
     <?xml version="1.0">
         <feed xmlns="http://www.w3.org/2005/Atom">
@@ -184,7 +184,7 @@ This consumer wants to check if there are any more recent entries, so it issues 
             </entry>
         </feed>
 
-The entry with id "urn:uuid:fc374b00-75c7-11e2-bcfd-0800200c9a66" is not present. This is because since the consumer last checked the feed, the server has added new entries to the front of the feed, archiving a document and starting a new one in the process.
+The entry with id "urn:uuid:fc374b00-75c7-11e2-bcfd-0800200c9a66" is not present. This is because since the consumer last checked the feed, the provider has added new entries to the front of the feed, archiving a document and starting a new one in the process.
 
 The consumer therefore issues a GET request for the previous document, which has the URL "http://example.com/documents/3".
 
@@ -205,7 +205,7 @@ This time, the consumer does find the entry it last processed. The consumer can 
 
 As the consumer goes through the entries, it keeps updating its record of the most recent entry processed. Note that because the series of entries is time-ordered, the client need only keep track of the identifier of the most recent entry it has processed.
 
-Notice that the service does not have to keep track of who the consumers are or which entry they are each up to. The guarantee that new events are always added to the front of the list allows consumers to do that for themselves.
+Notice that the feed provider does not have to keep track of who the consumers are or which entry they are each up to. The guarantee that new events are always added to the front of the list allows consumers to do that for themselves.
 
 ![Documents are chained using next-archive and prev-archive links](Atom.png "Chaining documents")
 
@@ -214,17 +214,19 @@ Implementation considerations
 
 One of the biggest advantages to using Atom is caching. Servers should serve archived documents with aggressive Cache-Control headers, because once a document is archived, it does not change. Servers can take advantage of this by writing archived documents out to disk and serving them as static files.
 
-Note that this caching is possible because the pagination of entries into documents is controlled by the server. If every consumer could decide how to break up the series of entries, we would have to cache many different pagination combinations.
+Note that this caching is possible because the pagination of entries into documents is controlled by the feed provider. If every consumer could decide how to break up the series of entries, we would have to cache many different pagination combinations.
 
-Consumers should not care how pagination is implemented, because they simply follow links and retrieve resources. The server might choose to break the feed into time periods e.g. a document per day. However, if the flow of events is irregular, that could lead to some documents being very large and others being very small. This can be addressed by keeping a fixed number of entries per document.
+Consumers should not care how pagination is implemented, because they simply follow links and retrieve resources. The provider might choose to break the feed into time periods e.g. a document per day. However, if the flow of events is irregular, that could lead to some documents being very large and others being very small. This can be addressed by keeping a fixed number of entries per document.
 
-Cache-Control headers on the recent document are limited by the freshness requirements of the system. It may still worthwhile allowing consumers and HTTP caches to cache the recent document for a short period of time, as it can reduce load on the server, but the length of time in the header must take into account how quickly consumers need to find out about new events.
+Cache-Control headers on the recent document are limited by the freshness requirements of the system. It may still worthwhile allowing consumers and HTTP caches to cache the recent document for a short period of time, as it can reduce load on the server hosting the feed, but the length of time in the header must take into account how quickly consumers need to find out about new events.
 
 For example, in a system with heavy load, using Cache-Control headers with a short time-to-live in conjunction with a reverse proxy gives an upper-bound on how often the server needs to generate the recent document. For example, a time-to-live of 60 seconds means that the origin server will only have to generate the recent document once per minute, regardless of how many consumers there are.
 
-Another useful optimisation for the recent document are ETags and Last-Modified headers. Consumers poll the recent document potentially very often, so if they are able to issue a conditional GET accompanied by an ETag or Last-Modified date then the server can simply reply with a 304 Not Modified response and avoid transfering the entire recent document to the client.
+Another useful optimisation for the recent document are ETags and Last-Modified headers. Consumers poll the recent document potentially very often, so if they are able to issue a conditional GET accompanied by an ETag or Last-Modified date then the feed provider can simply reply with a 304 Not Modified response and avoid transferring the entire recent document to the consumer.
 
 References
 ----------
 
 A great reference for understanding Atom's use in RESTful event-driven systems is Chapter 7 of [REST in Practice](http://restinpractice.com/book/) by Jim Webber, Savas Parastatidis and Ian Robinson.
+
+[Atomfeed](https://github.com/ICT4H/atomfeed) is a library for using Simplefeed from Java or Java Spring web applications. Currently a work-in-progress.
