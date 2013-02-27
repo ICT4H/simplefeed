@@ -87,7 +87,7 @@ The feed provider breaks up the series of events into separate documents and giv
 
 Similar to a doubly-linked list, each document has *prev-archive* and *next-archive* links that can be followed to find the next document in the chain.
 
-There is one special document known as the recent document, which holds the most recent entries. This document does not have a *next-archive* link because it is at the head of the list.
+There are two special cases. Because it is at the head of the list, the recent document cannot have a *next-archive* link. Similarly, the first document does not have a *prev-archive* link.
 
 The recent document is the published entry point to the feed. Consumers of the event feed will always be able to retrieve http://example.com/recent to get the most recent entries.
 
