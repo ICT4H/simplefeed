@@ -229,4 +229,4 @@ References
 
 A great reference for understanding Atom's use in RESTful event-driven systems is [REST in Practice](http://restinpractice.com/book/) by Jim Webber, Savas Parastatidis and Ian Robinson. We based our description of Simplefeed on Chapter 7.
 
-[Atomfeed](https://github.com/ICT4H/atomfeed) is a library for using Simplefeed from Java or Java Spring web applications. Currently a work-in-progress.
+[Atomfeed](https://github.com/ICT4H/atomfeed) is a library for using Simplefeed from Java or Java Spring web applications.
