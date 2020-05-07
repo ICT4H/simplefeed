@@ -4,7 +4,7 @@ Simplefeed
 What is Atom?
 ------------
 
-[Atom](http://en.wikipedia.org/wiki/Atom_(standard\)) is an XML-based syndication format which represents time-ordered series of events. In Atom terminology, each event is an *entry* and the series of events is a *feed*.
+[Atom](http://en.wikipedia.org/wiki/Atom_(standard)) is an XML-based syndication format which represents time-ordered series of events. In Atom terminology, each event is an *entry* and the series of events is a *feed*.
 
 Both feeds and entries have metadata associated with them, for example a title and a unique identifier. They can also have links with a *rel* attribute describing the relationship the link represents, for example a link with rel "self" that points back to the selfsame entry or feed.
 
